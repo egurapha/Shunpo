@@ -23,6 +23,30 @@ Installation
 ----
 Run `install.sh && source ~/.bashrc`.
 
+### Building with Nix Flakes
+
+To build the project using Nix flakes, follow these steps:
+
+1. Ensure you have Nix installed. If not, you can install it from [here](https://nixos.org/download.html).
+2. Run the following command to enter a development shell with all dependencies:
+   ```sh
+   nix develop
+   ```
+3. To build the project, run:
+   ```sh
+   nix build
+   ```
+
+### Development Shell with Nix Flakes
+
+To enter a development shell with all dependencies using Nix flakes, follow these steps:
+
+1. Ensure you have Nix installed. If not, you can install it from [here](https://nixos.org/download.html).
+2. Run the following command to enter the development shell:
+   ```sh
+   nix develop
+   ```
+
 Tutorial
 ----
 Click [here](https://www.youtube.com/watch?v=TN66A3MPo50) for a video tutorial.  
