@@ -1,0 +1,7 @@
+sj() { source "/home/gunalx/Documents/div/Shunpo/results/bin/jump_to_parent.sh"; }
+sd() { source "/home/gunalx/Documents/div/Shunpo/results/bin/jump_to_child.sh"; }
+sb() { "/home/gunalx/Documents/div/Shunpo/results/bin/add_bookmark.sh" "$@"; }
+sr() { "/home/gunalx/Documents/div/Shunpo/results/bin/remove_bookmark.sh" "$@"; }
+sg() { source "/home/gunalx/Documents/div/Shunpo/results/bin/go_to_bookmark.sh"; }
+sl() { "/home/gunalx/Documents/div/Shunpo/results/bin/list_bookmarks.sh"; }
+sc() { "/home/gunalx/Documents/div/Shunpo/results/bin/clear_bookmarks.sh"; }
