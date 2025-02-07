@@ -8,12 +8,26 @@ fi
 
 SHUNPO_BOOKMARKS_FILE="$SHUNPO_BOOKMARKS_DIR/.shunpo_bookmarks"
 
+# Function to map index to home row keys
+function shunpo_index_to_key() {
+    local index=$1
+    local keys=$2
+    echo $keys | cut -d' ' -f$((index + 1))
+}
+
+# Function to map key to index
+function shunpo_key_to_index() {
+    local keys=$2
+    echo $keys | tr ' ' '\n' | grep -n "^$1$" | cut -d: -f1 | awk '{print $1-1}'
+}
+
 # Function to display bookmarks with pagination.
 function shunpo_interact_bookmarks() {
     local bookmarks=()
     local total_bookmarks
     local current_page=0
     local max_per_page=10
+    local keys="a s d f g h j k l ;"
     local last_page
     local start_index
     local end_index
@@ -80,7 +94,7 @@ function shunpo_interact_bookmarks() {
 
         # Display bookmarks for the current page.
         for ((i = start_index; i < end_index; i++)); do
-            echo -e "[${SHUNPO_BOLD}${SHUNPO_ORANGE}$((i - start_index))${SHUNPO_RESET}] ${bookmarks[i]}"
+            echo -e "[${SHUNPO_BOLD}${SHUNPO_ORANGE}$(shunpo_index_to_key $((i - start_index)) "$keys")${SHUNPO_RESET}] ${bookmarks[i]}"
         done
 
         if [ $last_page -gt 1 ]; then
@@ -101,9 +115,9 @@ function shunpo_interact_bookmarks() {
             fi
             shunpo_clear_output
 
-        elif [[ $input =~ ^[0-9]+$ ]] && [ "$input" -ge 0 ] && [ "$input" -lt $max_per_page ]; then
+        elif [[ $keys =~ $input ]]; then
             # Process bookmark selection input.
-            shunpo_selected_bookmark_index=$((current_page * max_per_page + input))
+            shunpo_selected_bookmark_index=$((current_page * max_per_page + $(shunpo_key_to_index $input "$keys")))
             if [[ $shunpo_selected_bookmark_index -lt $total_bookmarks ]]; then
                 shunpo_selected_dir="${bookmarks[$shunpo_selected_bookmark_index]}"
                 shunpo_clear_output
@@ -130,6 +144,7 @@ function shunpo_jump_to_parent_dir() {
     local total_parents
     local current_page=0
     local max_per_page=10
+    local keys="a s d f g h j k l ;"
     local last_page
     local start_index
     local end_index
@@ -200,7 +215,7 @@ function shunpo_jump_to_parent_dir() {
 
         # Display the current page of parent directories.
         for ((i = start_index; i < end_index; i++)); do
-            echo -e "[${SHUNPO_BOLD}${SHUNPO_ORANGE}$((i - start_index))${SHUNPO_RESET}] ${parent_dirs[i]}"
+            echo -e "[${SHUNPO_BOLD}${SHUNPO_ORANGE}$(shunpo_index_to_key $((i - start_index)) "$keys")${SHUNPO_RESET}] ${parent_dirs[i]}"
         done
 
         if [ $last_page -gt 1 ]; then
@@ -221,8 +236,8 @@ function shunpo_jump_to_parent_dir() {
             fi
             shunpo_clear_output
 
-        elif [[ $input =~ ^[0-9]+$ ]] && [ "$input" -gt 0 ] && [ "$input" -le "$max_per_page" ]; then
-            selected_index=$((start_index + input))
+        elif [[ $keys =~ $input ]]; then
+            selected_index=$((start_index + $(shunpo_key_to_index $input "$keys")))
             if [[ $selected_index -lt $total_parents ]]; then
                 shunpo_clear_output
                 tput cnorm
@@ -246,6 +261,7 @@ function shunpo_jump_to_parent_dir() {
 function shunpo_jump_to_child_dir() {
     local current_dir=$(pwd)
     local max_per_page=10
+    local keys="a s d f g h j k l ;"
     local current_page=0
     local last_page
     local start_index
@@ -341,7 +357,7 @@ function shunpo_jump_to_child_dir() {
         else
             # Print child directories.
             for ((i = start_index; i < end_index; i++)); do
-                echo -e "[${SHUNPO_BOLD}${SHUNPO_ORANGE}$((i - start_index))${SHUNPO_RESET}] ${child_dirs[i]#$selected_path}"
+              echo -e "[${SHUNPO_BOLD}${SHUNPO_ORANGE}$(shunpo_index_to_key $((i - start_index)) "$keys")${SHUNPO_RESET}] ${child_dirs[i]#$selected_path}"
             done
 
             if [ $last_page -gt 1 ]; then
@@ -387,8 +403,8 @@ function shunpo_jump_to_child_dir() {
             fi
             break
 
-        elif [[ $input =~ ^[0-9]+$ ]] && [[ $input -ge 0 ]] && [[ $input -lt $max_per_page ]]; then
-            selected_index=$((start_index + input))
+        elif [[  $keys =~ $input ]]; then
+            selected_index=$((start_index + $(shunpo_key_to_index $input "$keys")))
             if [[ $selected_index -lt $total_child_dirs ]]; then
                 selected_path="${child_dirs[selected_index]}"
                 is_start_dir=0
