@@ -200,7 +200,13 @@ function shunpo_jump_to_parent_dir() {
 
         # Display the current page of parent directories.
         for ((i = start_index; i < end_index; i++)); do
-            echo -e "[${SHUNPO_BOLD}${SHUNPO_ORANGE}$((i - start_index))${SHUNPO_RESET}] ${parent_dirs[i]}"
+            if [[ $i -eq $((end_index - 1)) && $current_page -eq $((last_page - 1)) ]]; then
+                echo -e "[${SHUNPO_BOLD}${SHUNPO_ORANGE}$((i - start_index))${SHUNPO_RESET}] $(basename ${parent_dirs[i]})"
+            elif [[ $i -eq $start_index && $current_page -eq 0 ]]; then
+                echo -e "[${SHUNPO_BOLD}${SHUNPO_ORANGE}$((i - start_index))${SHUNPO_RESET}] $(basename ${parent_dirs[i]})"
+            else
+                echo -e "[${SHUNPO_BOLD}${SHUNPO_ORANGE}$((i - start_index))${SHUNPO_RESET}] $(basename ${parent_dirs[i]})/"
+            fi
         done
 
         if [ $last_page -gt 1 ]; then
