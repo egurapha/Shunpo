@@ -43,10 +43,10 @@ Commands
 `sd`: "Dive" down to a child directory.
 
 #### Selection:
-`0~9`: Select an option.
-`n`: Next page.
-`p`: Previous page.
-`b`: Move selection back to parent directory. (For `sd` only.)
+`0~9`: Select an option.  
+`n`: Next page.  
+`p`: Previous page.  
+`b`: Move selection back to parent directory. (For `sd` only.)  
 `Enter`: Navigate to selected directory (For `sd` only.)
 
 Customization
