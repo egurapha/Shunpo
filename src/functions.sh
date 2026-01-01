@@ -1,5 +1,65 @@
 #!/usr/bin/env bash
 
+# Configuration Path.
+SHUNPO_CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/shunpo"
+SHUNPO_CONFIG_FILE="$SHUNPO_CONFIG_DIR/config"
+
+# Default selection keys (can be overridden in config).
+SHUNPO_SELECTION_KEYS="0123456789"
+
+# Load and validate user configuration.
+function shunpo_load_config() {
+    if [ -f "$SHUNPO_CONFIG_FILE" ]; then
+        local user_keys
+        # Source the config to get SHUNPO_SELECTION_KEYS
+        source "$SHUNPO_CONFIG_FILE"
+        user_keys="$SHUNPO_SELECTION_KEYS"
+
+        # Validate: exactly 10 characters
+        if [ ${#user_keys} -ne 10 ]; then
+            echo -e "${SHUNPO_BOLD}${SHUNPO_ORANGE}Warning: SHUNPO_SELECTION_KEYS must be exactly 10 characters. Using defaults.${SHUNPO_RESET}"
+            SHUNPO_SELECTION_KEYS="0123456789"
+            return
+        fi
+
+        # Validate: no reserved keys (n, p, b)
+        if [[ $user_keys == *n* ]] || [[ $user_keys == *p* ]] || [[ $user_keys == *b* ]]; then
+            echo -e "${SHUNPO_BOLD}${SHUNPO_ORANGE}Warning: SHUNPO_SELECTION_KEYS cannot contain 'n', 'p', or 'b'. Using defaults.${SHUNPO_RESET}"
+            SHUNPO_SELECTION_KEYS="0123456789"
+            return
+        fi
+
+        # Validate: no duplicate characters
+        local seen=""
+        for ((i = 0; i < ${#user_keys}; i++)); do
+            local char="${user_keys:i:1}"
+            if [[ $seen == *"$char"* ]]; then
+                echo -e "${SHUNPO_BOLD}${SHUNPO_ORANGE}Warning: SHUNPO_SELECTION_KEYS cannot contain duplicates. Using defaults.${SHUNPO_RESET}"
+                SHUNPO_SELECTION_KEYS="0123456789"
+                return
+            fi
+            seen+="$char"
+        done
+
+        SHUNPO_SELECTION_KEYS="$user_keys"
+    fi
+}
+
+# Get the index (0-9) for a given key, or return 1 if not found.
+function shunpo_get_key_index() {
+    local key="$1"
+    for ((i = 0; i < ${#SHUNPO_SELECTION_KEYS}; i++)); do
+        if [[ ${SHUNPO_SELECTION_KEYS:i:1} == "$key" ]]; then
+            echo "$i"
+            return 0
+        fi
+    done
+    return 1
+}
+
+# Load configuration on source.
+shunpo_load_config
+
 # Default Bookmarks Path.
 SHUNPO_BOOKMARKS_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/shunpo/"
 if [ ! -d "$SHUNPO_BOOKMARKS_DIR" ]; then
@@ -80,7 +140,7 @@ function shunpo_interact_bookmarks() {
 
         # Display bookmarks for the current page.
         for ((i = start_index; i < end_index; i++)); do
-            echo -e "[${SHUNPO_BOLD}${SHUNPO_ORANGE}$((i - start_index))${SHUNPO_RESET}] ${bookmarks[i]}"
+            echo -e "[${SHUNPO_BOLD}${SHUNPO_ORANGE}${SHUNPO_SELECTION_KEYS:$((i - start_index)):1}${SHUNPO_RESET}] ${bookmarks[i]}"
         done
 
         if [ $last_page -gt 1 ]; then
@@ -101,9 +161,9 @@ function shunpo_interact_bookmarks() {
             fi
             shunpo_clear_output
 
-        elif [[ $input =~ ^[0-9]+$ ]] && [ "$input" -ge 0 ] && [ "$input" -lt $max_per_page ]; then
+        elif key_index=$(shunpo_get_key_index "$input"); then
             # Process bookmark selection input.
-            shunpo_selected_bookmark_index=$((current_page * max_per_page + input))
+            shunpo_selected_bookmark_index=$((current_page * max_per_page + key_index))
             if [[ $shunpo_selected_bookmark_index -lt $total_bookmarks ]]; then
                 shunpo_selected_dir="${bookmarks[$shunpo_selected_bookmark_index]}"
                 shunpo_clear_output
@@ -201,9 +261,9 @@ function shunpo_jump_to_parent_dir() {
         # Display the current page of parent directories.
         for ((i = start_index; i < end_index; i++)); do
             if [[ $i -eq $((end_index - 1)) && $current_page -eq $((last_page - 1)) ]]; then
-                echo -e "[${SHUNPO_BOLD}${SHUNPO_ORANGE}$((i - start_index))${SHUNPO_RESET}] $(basename "${parent_dirs[i]}")"
+                echo -e "[${SHUNPO_BOLD}${SHUNPO_ORANGE}${SHUNPO_SELECTION_KEYS:$((i - start_index)):1}${SHUNPO_RESET}] $(basename "${parent_dirs[i]}")"
             else
-                echo -e "[${SHUNPO_BOLD}${SHUNPO_ORANGE}$((i - start_index))${SHUNPO_RESET}] /$(basename "${parent_dirs[i]}")"
+                echo -e "[${SHUNPO_BOLD}${SHUNPO_ORANGE}${SHUNPO_SELECTION_KEYS:$((i - start_index)):1}${SHUNPO_RESET}] /$(basename "${parent_dirs[i]}")"
             fi
         done
 
@@ -225,17 +285,16 @@ function shunpo_jump_to_parent_dir() {
             fi
             shunpo_clear_output
 
-        elif [[ $input =~ ^[0-9]+$ ]] && [ "$input" -ge 0 ] && [ "$input" -lt "$max_per_page" ]; then
-            selected_index=$((start_index + input))
-            if [[ $selected_index -lt $total_parents ]]; then
+        elif key_index=$(shunpo_get_key_index "$input"); then
+            selected_index=$((start_index + key_index))
+            if [[ $selected_index -ge 0 ]] && [[ $selected_index -lt $total_parents ]]; then
                 shunpo_clear_output
                 tput cnorm
                 cd "${parent_dirs[$selected_index]}" || return 1
                 echo -e "${SHUNPO_GREEN}${SHUNPO_BOLD}Changed to:${SHUNPO_RESET} ${parent_dirs[$selected_index]}"
                 return 0
-            else
-                shunpo_clear_output
             fi
+            shunpo_clear_output
         else
             shunpo_clear_output
             tput cnorm
@@ -345,7 +404,7 @@ function shunpo_jump_to_child_dir() {
         else
             # Print child directories.
             for ((i = start_index; i < end_index; i++)); do
-                echo -e "[${SHUNPO_BOLD}${SHUNPO_ORANGE}$((i - start_index))${SHUNPO_RESET}] ${child_dirs[i]#$selected_path}"
+                echo -e "[${SHUNPO_BOLD}${SHUNPO_ORANGE}${SHUNPO_SELECTION_KEYS:$((i - start_index)):1}${SHUNPO_RESET}] ${child_dirs[i]#"$selected_path"}"
             done
 
             if [ $last_page -gt 1 ]; then
@@ -391,8 +450,8 @@ function shunpo_jump_to_child_dir() {
             fi
             break
 
-        elif [[ $input =~ ^[0-9]+$ ]] && [[ $input -ge 0 ]] && [[ $input -lt $max_per_page ]]; then
-            selected_index=$((start_index + input))
+        elif key_index=$(shunpo_get_key_index "$input"); then
+            selected_index=$((start_index + key_index))
             if [[ $selected_index -lt $total_child_dirs ]]; then
                 selected_path="${child_dirs[selected_index]}"
                 is_start_dir=0
@@ -448,6 +507,9 @@ function shunpo_cleanup() {
     # Clean up to avoid namespace pollution.
     unset SHUNPO_BOOKMARKS_FILE
     unset SHUNPO_BOOKMARKS_DIR
+    unset SHUNPO_CONFIG_DIR
+    unset SHUNPO_CONFIG_FILE
+    unset SHUNPO_SELECTION_KEYS
     unset IFS
     unset shunpo_selected_dir
     unset shunpo_selected_bookmark_index
@@ -459,6 +521,8 @@ function shunpo_cleanup() {
     unset -f shunpo_jump_to_child_dir
     unset -f shunpo_is_cached
     unset -f shunpo_handle_kill
+    unset -f shunpo_load_config
+    unset -f shunpo_get_key_index
     unset -f shunpo_cleanup
     tput cnorm
     stty echo

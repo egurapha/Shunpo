@@ -47,8 +47,25 @@ Commands
 `n`: Next page.  
 `p`: Previous page.  
 `b`: Move selection back to parent directory. (For `sd` only.)  
-`Enter`: Navigate to selected directory (For `sd` only.)  
- 
+`Enter`: Navigate to selected directory (For `sd` only.)
+
+Customization
+----
+You can customize the selection keys by editing the config file at `~/.config/shunpo/config`:
+
+```bash
+# Selection keys (exactly 10 characters, one per menu item)
+SHUNPO_SELECTION_KEYS="asdfghjkl;"
+```
+
+**Rules:**
+- Must be exactly 10 characters (one for each menu item).
+- Cannot contain `n`, `p`, or `b` (reserved for navigation).
+- No duplicate characters allowed.
+- Invalid configs fall back to the default `0123456789`.
+
+**Note:** CLI arguments (e.g., `sg 3`, `sj 1`) always use numeric indices 0-9, regardless of your custom keys.
+
 Uninstalling
 ----
 Run `uninstall.sh`

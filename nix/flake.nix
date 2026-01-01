@@ -50,7 +50,23 @@ EOF
 
               # Write initialization file that must be sourced.
               SHUNPO_INIT=$INSTALL_DIR/shunpo_init
-              echo "source $SHUNPO_CMD" > "$SHUNPO_INIT"
+              cat > "$SHUNPO_INIT" <<'INIT_EOF'
+# Create default config file if it doesn't exist.
+SHUNPO_CONFIG_DIR=''${XDG_CONFIG_HOME:-$HOME/.config}/shunpo
+SHUNPO_CONFIG_FILE=$SHUNPO_CONFIG_DIR/config
+if [ ! -f "$SHUNPO_CONFIG_FILE" ]; then
+    mkdir -p "$SHUNPO_CONFIG_DIR"
+    cat >"$SHUNPO_CONFIG_FILE" <<'CONFIG_EOF'
+# Shunpo Configuration
+# Selection keys (exactly 10 characters, one per menu item)
+# Reserved keys that cannot be used: n, p, b
+# Note: CLI arguments (e.g., sg 3, sj 1) always use numeric indices 0-9
+SHUNPO_SELECTION_KEYS="0123456789"
+CONFIG_EOF
+fi
+unset SHUNPO_CONFIG_DIR SHUNPO_CONFIG_FILE
+INIT_EOF
+              echo "source $SHUNPO_CMD" >> "$SHUNPO_INIT"
               chmod +x $SHUNPO_INIT # not necessary, but keep for auto-complete.
             '';
 
