@@ -51,7 +51,7 @@ install() {
     echo "Added to BASHRC: $source_rc_line"
 
     # Record SHUNPO_DIR for uninstallation (overwrite).
-    install_dir_line="export SHUNPO_DIR=\"$INSTALL_DIR\""
+    install_dir_line="export SHUNPO_DIR=$INSTALL_DIR"
     temp_file=$(mktemp)
     grep -v '^export SHUNPO_DIR=' "$BASHRC" >"$temp_file"
     mv "$temp_file" "$BASHRC"
