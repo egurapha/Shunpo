@@ -68,7 +68,7 @@ install() {
 # Selection keys (exactly 10 characters, one per menu item)
 # Reserved keys that cannot be used: n, p, b
 # Note: CLI arguments (e.g., sg 3, sj 1) always use numeric indices 0-9
-SHUNPO_SELECTION_KEYS="1234567890"
+SHUNPO_SELECTION_KEYS="0123456789"
 EOF
         echo "Created config: $CONFIG_FILE"
     fi

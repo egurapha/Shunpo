@@ -48,7 +48,7 @@ teardown() {
     source ${SHUNPO_DIR}/scripts/functions.sh
 
     # Check default keys.
-    assert_equal "$SHUNPO_SELECTION_KEYS" "1234567890"
+    assert_equal "$SHUNPO_SELECTION_KEYS" "0123456789"
 }
 
 @test "Test Custom Selection Keys." {
@@ -65,7 +65,7 @@ teardown() {
     # Restore default config.
     cat >"${XDG_CONFIG_HOME}/shunpo/config" <<EOF
 # Shunpo Configuration
-SHUNPO_SELECTION_KEYS="1234567890"
+SHUNPO_SELECTION_KEYS="0123456789"
 EOF
 }
 
@@ -74,14 +74,14 @@ EOF
     source ${SHUNPO_DIR}/scripts/colors.sh
     source ${SHUNPO_DIR}/scripts/functions.sh
 
-    # Test key lookup with default keys "1234567890".
-    result=$(shunpo_get_key_index "1")
+    # Test key lookup with default keys "0123456789".
+    result=$(shunpo_get_key_index "0")
     assert_equal "$result" "0"
 
     result=$(shunpo_get_key_index "5")
-    assert_equal "$result" "4"
+    assert_equal "$result" "5"
 
-    result=$(shunpo_get_key_index "0")
+    result=$(shunpo_get_key_index "9")
     assert_equal "$result" "9"
 
     # Test invalid key returns failure.
@@ -114,7 +114,7 @@ EOF
     # Restore default config.
     cat >"${XDG_CONFIG_HOME}/shunpo/config" <<EOF
 # Shunpo Configuration
-SHUNPO_SELECTION_KEYS="1234567890"
+SHUNPO_SELECTION_KEYS="0123456789"
 EOF
 }
 
@@ -131,12 +131,12 @@ EOF
     source ${SHUNPO_DIR}/scripts/functions.sh
 
     # Should fall back to defaults.
-    assert_equal "$SHUNPO_SELECTION_KEYS" "1234567890"
+    assert_equal "$SHUNPO_SELECTION_KEYS" "0123456789"
 
     # Restore default config.
     cat >"${XDG_CONFIG_HOME}/shunpo/config" <<EOF
 # Shunpo Configuration
-SHUNPO_SELECTION_KEYS="1234567890"
+SHUNPO_SELECTION_KEYS="0123456789"
 EOF
 }
 
@@ -149,24 +149,24 @@ EOF
     source ${SHUNPO_DIR}/scripts/functions.sh
 
     # Should fall back to defaults.
-    assert_equal "$SHUNPO_SELECTION_KEYS" "1234567890"
+    assert_equal "$SHUNPO_SELECTION_KEYS" "0123456789"
 
     # Test with 'p'.
     echo 'SHUNPO_SELECTION_KEYS="abcdefghip"' >"${XDG_CONFIG_HOME}/shunpo/config"
     source ${SHUNPO_DIR}/scripts/colors.sh
     source ${SHUNPO_DIR}/scripts/functions.sh
-    assert_equal "$SHUNPO_SELECTION_KEYS" "1234567890"
+    assert_equal "$SHUNPO_SELECTION_KEYS" "0123456789"
 
     # Test with 'b'.
     echo 'SHUNPO_SELECTION_KEYS="abcdefghib"' >"${XDG_CONFIG_HOME}/shunpo/config"
     source ${SHUNPO_DIR}/scripts/colors.sh
     source ${SHUNPO_DIR}/scripts/functions.sh
-    assert_equal "$SHUNPO_SELECTION_KEYS" "1234567890"
+    assert_equal "$SHUNPO_SELECTION_KEYS" "0123456789"
 
     # Restore default config.
     cat >"${XDG_CONFIG_HOME}/shunpo/config" <<EOF
 # Shunpo Configuration
-SHUNPO_SELECTION_KEYS="1234567890"
+SHUNPO_SELECTION_KEYS="0123456789"
 EOF
 }
 
@@ -179,12 +179,12 @@ EOF
     source ${SHUNPO_DIR}/scripts/functions.sh
 
     # Should fall back to defaults.
-    assert_equal "$SHUNPO_SELECTION_KEYS" "1234567890"
+    assert_equal "$SHUNPO_SELECTION_KEYS" "0123456789"
 
     # Restore default config.
     cat >"${XDG_CONFIG_HOME}/shunpo/config" <<EOF
 # Shunpo Configuration
-SHUNPO_SELECTION_KEYS="1234567890"
+SHUNPO_SELECTION_KEYS="0123456789"
 EOF
 }
 
@@ -197,11 +197,11 @@ EOF
     source ${SHUNPO_DIR}/scripts/functions.sh
 
     # Should use defaults.
-    assert_equal "$SHUNPO_SELECTION_KEYS" "1234567890"
+    assert_equal "$SHUNPO_SELECTION_KEYS" "0123456789"
 
     # Restore default config.
     cat >"${XDG_CONFIG_HOME}/shunpo/config" <<EOF
 # Shunpo Configuration
-SHUNPO_SELECTION_KEYS="1234567890"
+SHUNPO_SELECTION_KEYS="0123456789"
 EOF
 }

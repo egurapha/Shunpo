@@ -5,7 +5,7 @@ SHUNPO_CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/shunpo"
 SHUNPO_CONFIG_FILE="$SHUNPO_CONFIG_DIR/config"
 
 # Default selection keys (can be overridden in config).
-SHUNPO_SELECTION_KEYS="1234567890"
+SHUNPO_SELECTION_KEYS="0123456789"
 
 # Load and validate user configuration.
 function shunpo_load_config() {
@@ -18,14 +18,14 @@ function shunpo_load_config() {
         # Validate: exactly 10 characters
         if [ ${#user_keys} -ne 10 ]; then
             echo -e "${SHUNPO_BOLD}${SHUNPO_ORANGE}Warning: SHUNPO_SELECTION_KEYS must be exactly 10 characters. Using defaults.${SHUNPO_RESET}"
-            SHUNPO_SELECTION_KEYS="1234567890"
+            SHUNPO_SELECTION_KEYS="0123456789"
             return
         fi
 
         # Validate: no reserved keys (n, p, b)
         if [[ $user_keys == *n* ]] || [[ $user_keys == *p* ]] || [[ $user_keys == *b* ]]; then
             echo -e "${SHUNPO_BOLD}${SHUNPO_ORANGE}Warning: SHUNPO_SELECTION_KEYS cannot contain 'n', 'p', or 'b'. Using defaults.${SHUNPO_RESET}"
-            SHUNPO_SELECTION_KEYS="1234567890"
+            SHUNPO_SELECTION_KEYS="0123456789"
             return
         fi
 
@@ -35,7 +35,7 @@ function shunpo_load_config() {
             local char="${user_keys:i:1}"
             if [[ $seen == *"$char"* ]]; then
                 echo -e "${SHUNPO_BOLD}${SHUNPO_ORANGE}Warning: SHUNPO_SELECTION_KEYS cannot contain duplicates. Using defaults.${SHUNPO_RESET}"
-                SHUNPO_SELECTION_KEYS="1234567890"
+                SHUNPO_SELECTION_KEYS="0123456789"
                 return
             fi
             seen+="$char"
@@ -287,8 +287,7 @@ function shunpo_jump_to_parent_dir() {
 
         elif key_index=$(shunpo_get_key_index "$input"); then
             selected_index=$((start_index + key_index))
-            # Skip index 0 (current directory) - only allow selecting actual parents
-            if [[ $selected_index -gt 0 ]] && [[ $selected_index -lt $total_parents ]]; then
+            if [[ $selected_index -ge 0 ]] && [[ $selected_index -lt $total_parents ]]; then
                 shunpo_clear_output
                 tput cnorm
                 cd "${parent_dirs[$selected_index]}" || return 1
