@@ -11,6 +11,8 @@ function setup_env {
     mkdir -p $HOME
     XDG_DATA_HOME=${SHUNPO_TEST_DIR}/home/.local/share
     mkdir -p $XDG_DATA_HOME
+    XDG_CONFIG_HOME=${SHUNPO_TEST_DIR}/home/.config
+    mkdir -p $XDG_CONFIG_HOME
 }
 
 function cleanup_env {

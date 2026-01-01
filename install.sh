@@ -10,6 +10,10 @@ BASHRC="$HOME/.bashrc"
 # File containing command definitions.
 SHUNPO_CMD="$INSTALL_DIR/shunpo_cmd"
 
+# Config file path.
+CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/shunpo"
+CONFIG_FILE="$CONFIG_DIR/config"
+
 setup() {
     mkdir -p $INSTALL_DIR
     mkdir -p $SCRIPT_DIR
@@ -55,6 +59,19 @@ install() {
     echo "Added to BASHRC: $install_dir_line"
 
     add_commands
+
+    # Create default config file if it doesn't exist.
+    if [ ! -f "$CONFIG_FILE" ]; then
+        mkdir -p "$CONFIG_DIR"
+        cat >"$CONFIG_FILE" <<EOF
+# Shunpo Configuration
+# Selection keys (exactly 10 characters, one per menu item)
+# Reserved keys that cannot be used: n, p, b
+# Note: CLI arguments (e.g., sg 3, sj 1) always use numeric indices 0-9
+SHUNPO_SELECTION_KEYS="1234567890"
+EOF
+        echo "Created config: $CONFIG_FILE"
+    fi
 }
 
 # Install.

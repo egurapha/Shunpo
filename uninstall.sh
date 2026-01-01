@@ -20,6 +20,17 @@ uninstall() {
         echo "Removed $SHUNPO_BOOKMARKS_FILE"
     fi
 
+    # Remove config file and directory.
+    SHUNPO_CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/shunpo"
+    SHUNPO_CONFIG_FILE="$SHUNPO_CONFIG_DIR/config"
+    if [ -f "$SHUNPO_CONFIG_FILE" ]; then
+        rm "$SHUNPO_CONFIG_FILE"
+        echo "Removed $SHUNPO_CONFIG_FILE"
+    fi
+    if [ -d "$SHUNPO_CONFIG_DIR" ]; then
+        rmdir "$SHUNPO_CONFIG_DIR" 2>/dev/null && echo "Removed $SHUNPO_CONFIG_DIR"
+    fi
+
     # Remove scripts and directories.
     if [ -z "$SHUNPO_DIR" ]; then
         echo "No Installation Found."
