@@ -59,10 +59,10 @@ SHUNPO_SELECTION_KEYS="asdfghjkl;"
 ```
 
 **Rules:**
-- Must be exactly 10 characters (one for each menu item)
-- Cannot contain `n`, `p`, or `b` (reserved for navigation)
-- No duplicate characters allowed
-- Invalid configs fall back to the default `1234567890`
+- Must be exactly 10 characters (one for each menu item).
+- Cannot contain `n`, `p`, or `b` (reserved for navigation).
+- No duplicate characters allowed.
+- Invalid configs fall back to the default `1234567890`.
 
 **Note:** CLI arguments (e.g., `sg 3`, `sj 1`) always use numeric indices 0-9, regardless of your custom keys.
 
