@@ -220,7 +220,7 @@ function shunpo_jump_to_parent_dir() {
             return 1
         else
             if [[ $1 -lt $total_parents ]]; then
-                cd "${parent_dirs[$1]}" || exit
+                cd "${parent_dirs[$1]}" || return 1
                 tput cnorm
                 echo -e "${SHUNPO_GREEN}${SHUNPO_BOLD}Changed to:${SHUNPO_RESET} ${parent_dirs[$1]}"
                 return 0
@@ -261,9 +261,9 @@ function shunpo_jump_to_parent_dir() {
         # Display the current page of parent directories.
         for ((i = start_index; i < end_index; i++)); do
             if [[ $i -eq $((end_index - 1)) && $current_page -eq $((last_page - 1)) ]]; then
-                echo -e "[${SHUNPO_BOLD}${SHUNPO_ORANGE}${SHUNPO_SELECTION_KEYS:$((i - start_index)):1}${SHUNPO_RESET}] $(basename ${parent_dirs[i]})"
+                echo -e "[${SHUNPO_BOLD}${SHUNPO_ORANGE}${SHUNPO_SELECTION_KEYS:$((i - start_index)):1}${SHUNPO_RESET}] $(basename "${parent_dirs[i]}")"
             else
-                echo -e "[${SHUNPO_BOLD}${SHUNPO_ORANGE}${SHUNPO_SELECTION_KEYS:$((i - start_index)):1}${SHUNPO_RESET}] /$(basename ${parent_dirs[i]})"
+                echo -e "[${SHUNPO_BOLD}${SHUNPO_ORANGE}${SHUNPO_SELECTION_KEYS:$((i - start_index)):1}${SHUNPO_RESET}] /$(basename "${parent_dirs[i]}")"
             fi
         done
 
@@ -291,7 +291,7 @@ function shunpo_jump_to_parent_dir() {
             if [[ $selected_index -gt 0 ]] && [[ $selected_index -lt $total_parents ]]; then
                 shunpo_clear_output
                 tput cnorm
-                cd "${parent_dirs[$selected_index]}" || exit
+                cd "${parent_dirs[$selected_index]}" || return 1
                 echo -e "${SHUNPO_GREEN}${SHUNPO_BOLD}Changed to:${SHUNPO_RESET} ${parent_dirs[$selected_index]}"
                 return 0
             fi
@@ -405,7 +405,7 @@ function shunpo_jump_to_child_dir() {
         else
             # Print child directories.
             for ((i = start_index; i < end_index; i++)); do
-                echo -e "[${SHUNPO_BOLD}${SHUNPO_ORANGE}${SHUNPO_SELECTION_KEYS:$((i - start_index)):1}${SHUNPO_RESET}] ${child_dirs[i]#$selected_path}"
+                echo -e "[${SHUNPO_BOLD}${SHUNPO_ORANGE}${SHUNPO_SELECTION_KEYS:$((i - start_index)):1}${SHUNPO_RESET}] ${child_dirs[i]#"$selected_path"}"
             done
 
             if [ $last_page -gt 1 ]; then
@@ -446,7 +446,7 @@ function shunpo_jump_to_child_dir() {
         elif [[ $input == "" ]]; then
             shunpo_clear_output
             if [[ $is_start_dir -ne 1 ]]; then
-                cd "$selected_path" || exit
+                cd "$selected_path" || return 1
                 echo -e "${SHUNPO_GREEN}${SHUNPO_BOLD}Changed to:${SHUNPO_RESET} $selected_path"
             fi
             break

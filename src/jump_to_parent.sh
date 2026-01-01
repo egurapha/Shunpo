@@ -16,16 +16,16 @@ function shunpo_handle_kill() {
 
 trap 'shunpo_handle_kill; return 1' SIGINT
 
-shunpo_jump_to_parent_dir $1
+shunpo_jump_to_parent_dir "$1"
+shunpo_exit_code=$?
 
 # Handle case where bookmark is not set.
-if [ $? -eq 1 ]; then
-
+if [ $shunpo_exit_code -eq 1 ]; then
     if declare -f shunpo_cleanup >/dev/null; then
         shunpo_cleanup
     fi
     return 1
-elif [ $? -eq 2 ]; then
+elif [ $shunpo_exit_code -eq 2 ]; then
     if declare -f shunpo_cleanup >/dev/null; then
         shunpo_cleanup
     fi

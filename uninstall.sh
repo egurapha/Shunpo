@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 BASHRC="$HOME/.bashrc"
-source $BASHRC
+source "$BASHRC"
 
 uninstall() {
     # Remove commands file.
@@ -15,8 +15,8 @@ uninstall() {
     # Remove bookmarks file.
     SHUNPO_BOOKMARKS_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/shunpo"
     SHUNPO_BOOKMARKS_FILE="$SHUNPO_BOOKMARKS_DIR/.shunpo_bookmarks"
-    if [ -f $SHUNPO_BOOKMARKS_FILE ]; then
-        rm $SHUNPO_BOOKMARKS_FILE
+    if [ -f "$SHUNPO_BOOKMARKS_FILE" ]; then
+        rm "$SHUNPO_BOOKMARKS_FILE"
         echo "Removed $SHUNPO_BOOKMARKS_FILE"
     fi
 
@@ -49,7 +49,7 @@ uninstall() {
         cd ..
         rmdir "${SHUNPO_DIR}"/scripts
         cd ..
-        rmdir $SHUNPO_DIR
+        rmdir "$SHUNPO_DIR"
         echo "Removed $SHUNPO_DIR"
         unset SHUNPO_DIR
     fi
