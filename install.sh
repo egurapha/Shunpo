@@ -11,12 +11,12 @@ BASHRC="$HOME/.bashrc"
 SHUNPO_CMD="$INSTALL_DIR/shunpo_cmd"
 
 setup() {
-    mkdir -p $INSTALL_DIR
-    mkdir -p $SCRIPT_DIR
-    if [ -f $SHUNPO_CMD ]; then
-        rm $SHUNPO_CMD
+    mkdir -p "$INSTALL_DIR"
+    mkdir -p "$SCRIPT_DIR"
+    if [ -f "$SHUNPO_CMD" ]; then
+        rm "$SHUNPO_CMD"
     fi
-    touch $SHUNPO_CMD
+    touch "$SHUNPO_CMD"
 }
 
 add_commands() {
@@ -36,7 +36,7 @@ EOF
 
 install() {
     # Store scripts in SCRIPTS_DIR.
-    cp src/* $SCRIPT_DIR
+    cp src/* "$SCRIPT_DIR"
 
     # Add sourcing for shunpo_cmd (overwrite).
     source_rc_line="source $SHUNPO_CMD"
@@ -47,7 +47,7 @@ install() {
     echo "Added to BASHRC: $source_rc_line"
 
     # Record SHUNPO_DIR for uninstallation (overwrite).
-    install_dir_line="export SHUNPO_DIR=$INSTALL_DIR" >>"$BASHRC$"
+    install_dir_line="export SHUNPO_DIR=$INSTALL_DIR"
     temp_file=$(mktemp)
     grep -v '^export SHUNPO_DIR=' "$BASHRC" >"$temp_file"
     mv "$temp_file" "$BASHRC"
