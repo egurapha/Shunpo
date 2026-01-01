@@ -18,7 +18,7 @@
           default = self.packages.${pkgs.system}.shunpo;
           shunpo = pkgs.stdenv.mkDerivation {
             pname = "shunpo";
-            version = "1.0.3";
+            version = "1.0.4";
 
             src = builtins.path { path = ../src; };
             buildInputs = [ pkgs.bash pkgs.shfmt ];
