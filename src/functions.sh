@@ -342,7 +342,8 @@ function shunpo_jump_to_child_dir() {
         # Attempt to retrieve from cache.
         if cache_index=$(shunpo_is_cached "$selected_path"); then
             # Use cached value.
-            IFS='|' read -r -a child_dirs <<<"${cache_values[$cache_index]}"
+            local IFS='|'
+            read -r -a child_dirs <<<"${cache_values[$cache_index]}"
         else
             # Collect directories if not cached.
             child_dirs=()
@@ -505,14 +506,22 @@ function shunpo_assert_bookmarks_exist() {
 
 function shunpo_cleanup() {
     # Clean up to avoid namespace pollution.
+    #
+    # Restore terminal state.
+    [ -t 0 ] && tput cnorm 2>/dev/null
+    trap - SIGINT
+
+    # Clean up variables.
     unset SHUNPO_BOOKMARKS_FILE
     unset SHUNPO_BOOKMARKS_DIR
     unset SHUNPO_CONFIG_DIR
     unset SHUNPO_CONFIG_FILE
     unset SHUNPO_SELECTION_KEYS
-    unset IFS
+    IFS=$' \t\n' # Restore IFS to default.
     unset shunpo_selected_dir
     unset shunpo_selected_bookmark_index
+
+    # Clean up functions.
     unset -f shunpo_interact_bookmarks
     unset -f shunpo_add_space
     unset -f shunpo_clear_output
@@ -524,7 +533,4 @@ function shunpo_cleanup() {
     unset -f shunpo_load_config
     unset -f shunpo_get_key_index
     unset -f shunpo_cleanup
-    tput cnorm
-    stty echo
-    trap - SIGINT
 }
